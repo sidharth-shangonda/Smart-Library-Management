@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/global.css"/>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+  <div class="admin-container">
+    <h1 class="admin-heading">Admin Dashboard</h1>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="fa-solid fa-users"></i>
+        <h3><%= totalUsers %></h3>
+        <p>Total Users</p>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-book"></i>
+        <h3><%= totalBooks %></h3>
+        <p>Total Books</p>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-book-open"></i>
+        <h3><%= totalIssued %></h3>
+        <p>Currently Issued</p>
+      </div>
+      <div class="stat-card stat-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3><%= overdueBooks %></h3>
+        <p>Overdue Books</p>
+      </div>
+    </div>
+    <div class="quick-links">
+      <a href="/admin/books"  class="quick-btn"><i class="fa-solid fa-book"></i> Manage Books</a>
+      <a href="/admin/users"  class="quick-btn"><i class="fa-solid fa-users"></i> Manage Users</a>
+      <a href="/admin/issued" class="quick-btn"><i class="fa-solid fa-list"></i> Issued Books</a>
+    </div>
+  </div>
+</body>
+</html>

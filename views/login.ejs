@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/auth.css"/>
+</head>
+<body>
+  <div class="log_in">
+    <h1>Login</h1>
+
+    <% if (message) { %>
+      <p class="error-msg"><%= message %></p>
+    <% } %>
+
+    <form action="/login" method="POST">
+      <div class="input-box">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" name="username" placeholder="Enter Username" required/>
+      </div>
+      <div class="input-box">
+        <i class="fa-solid fa-lock"></i>
+        <div class="pass">
+          <input type="password" name="password" placeholder="Enter Password" required/>
+          <i class="fa-solid fa-eye" id="togglePassword"
+             onclick="togglePassword('password','togglePassword')"></i>
+        </div>
+      </div>
+      <button type="submit" class="btn-auth">Login</button>
+    </form>
+
+    <div class="register-link" style="margin-top:10px;">
+      <a href="/forgot-password">Forgot Password?</a>
+    </div>
+    <div class="register-link">
+      <a href="/signup">Don't have an account? Signup</a>
+    </div>
+
+    <!-- Resend Verification -->
+    <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.3);padding-top:15px;width:100%;">
+      <p style="color:wheat;font-size:13px;text-align:center;margin-bottom:8px;">
+        Didn't receive verification email?
+      </p>
+      <form action="/resend-verification" method="POST" style="display:flex;gap:8px;">
+        <input type="email" name="email" placeholder="Enter your email"
+               style="flex:1;padding:8px;border-radius:8px;border:1px solid #183153;font-size:13px;outline:none;"/>
+        <button type="submit"
+                style="background:#183153;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;">
+          Resend
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+</body>
+</html>

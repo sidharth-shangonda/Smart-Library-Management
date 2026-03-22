@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/global.css"/>
+  <link rel="stylesheet" href="/css/dashboard.css"/>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="nav-title border">
+        <i class="fa-solid fa-book"></i>
+        <span>LIBRARY MANAGEMENT</span>
+      </div>
+      <div class="nav-right">
+        <button id="profileBtn"><i class="fa-solid fa-circle-user"></i></button>
+        <div class="nav-logout border">
+          <form action="/logout" method="POST">
+            <button type="submit" class="btn">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <h1>Welcome, <%= username %> 👋</h1>
+    <p>What would you like to do today?</p>
+    <div class="dashboard-options">
+      <a href="/browse"       class="dashboard-btn"><i class="fa-solid fa-magnifying-glass"></i> Browse & Search Books</a>
+      <a href="/issued_books" class="dashboard-btn"><i class="fa-solid fa-book-open"></i> My Issued Books</a>
+    </div>
+  </div>
+
+  <!-- Recent books section -->
+  <div class="books-section">
+    <h2 class="books-heading"><i class="fa-solid fa-fire" style="color:#e67e22;"></i> Recently Added Books</h2>
+    <div id="book-results" class="book-list"></div>
+    <div id="loading" class="loading-msg" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i> Loading books...</div>
+    <button id="show-more" class="show-more-btn" style="display:none;">Load More Books</button>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="profileModal">
+    <span id="closeModal">&times;</span>
+    <i class="fa-solid fa-circle-user"></i>
+    <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+    <p><strong>User ID:</strong>  <span id="modalUserId"></span></p>
+    <p><strong>Email:</strong>    <span id="modalEmail"></span></p>
+  </div>
+  <div id="modalBackdrop"></div>
+
+  <script src="/js/profile.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

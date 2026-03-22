@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Issued Books</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/global.css"/>
+  <link rel="stylesheet" href="/css/issued_books.css"/>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="nav-title border">
+        <i class="fa-solid fa-book"></i>
+        <span>LIBRARY MANAGEMENT</span>
+      </div>
+      <div class="nav-right">
+        <a href="/dashboard" class="back-link">
+          <i class="fa-solid fa-arrow-left"></i> Dashboard
+        </a>
+        <button id="profileBtn"><i class="fa-solid fa-circle-user"></i></button>
+        <div class="nav-logout border">
+          <form action="/logout" method="POST">
+            <button type="submit" class="btn">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="issued-container">
+    <h2>My Issued Books
+      <span class="book-count">(<%= issuedBooks.length %> book<%= issuedBooks.length !== 1 ? 's' : '' %>)</span>
+    </h2>
+
+    <% if (issuedBooks && issuedBooks.length > 0) { %>
+      <div class="book-list">
+        <% issuedBooks.forEach(book => { %>
+          <div class="book-card <%= book.overdue ? 'overdue-card' : '' %>">
+            <img src="<%= book.cover_image || '/images/default-cover.jpg' %>" alt="Book Cover"/>
+
+            <div class="book-details">
+              <div class="book-title"><%= book.title %></div>
+              <div class="book-info"><strong>Author:</strong>    <%= book.author || 'N/A' %></div>
+              <div class="book-info"><strong>Publisher:</strong> <%= book.publisher || 'N/A' %></div>
+              <div class="book-info"><strong>Issued On:</strong> <%= book.issue_date %></div>
+              <div class="book-info"><strong>Due Date:</strong>  <%= book.due_date %></div>
+              <div class="book-info"><strong>Book ID:</strong>   <%= book.book_id %></div>
+
+              <!-- Status Badge -->
+              <% if (book.overdue) { %>
+                <div class="fine-badge">
+                  ⚠️ Overdue by <%= Math.abs(book.daysLeft) %> day(s)
+                  &nbsp;|&nbsp;
+                  💸 Fine: ₹<%= book.fine %>
+                  <% if (book.finePaid) { %>
+                    &nbsp;<span style="color:#27ae60;font-weight:bold;">✅ Fine Paid</span>
+                  <% } else { %>
+                    &nbsp;<span style="color:#c0392b;">(Unpaid — pay at library counter)</span>
+                  <% } %>
+                </div>
+              <% } else if (book.daysLeft === 0) { %>
+                <div class="due-today-badge">
+                  🚨 Due Today! Return immediately to avoid fine.
+                </div>
+              <% } else if (book.daysLeft <= 5) { %>
+                <div class="warning-badge">
+                  ⏰ Only <%= book.daysLeft %> day(s) remaining!
+                </div>
+              <% } else { %>
+                <div class="safe-badge">
+                  ✅ <%= book.daysLeft %> day(s) remaining
+                </div>
+              <% } %>
+            </div>
+
+            <form method="POST" action="/return">
+              <input type="hidden" name="book_id" value="<%= book.book_id %>"/>
+              <button type="submit" class="return-button">Return</button>
+            </form>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="no-books-wrap">
+        <i class="fa-solid fa-book-open" style="font-size:50px;color:#ccc;"></i>
+        <p class="no-books">You have no books issued currently.</p>
+        <a href="/browse" class="browse-link">Browse Books →</a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="profileModal">
+    <span id="closeModal">&times;</span>
+    <i class="fa-solid fa-circle-user"></i>
+    <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+    <p><strong>User ID:</strong>  <span id="modalUserId"></span></p>
+    <p><strong>Email:</strong>    <span id="modalEmail"></span></p>
+  </div>
+  <div id="modalBackdrop"></div>
+
+  <script src="/js/profile.js"></script>
+</body>
+</html>

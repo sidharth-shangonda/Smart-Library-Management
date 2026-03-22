@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Verification</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/auth.css"/>
+  <style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-image: url("/images/lib.webp");
+        background-size: cover;
+        background-position: center;
+    }
+    .verify-box {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .verify-box i {
+        font-size: 70px;
+        margin-bottom: 20px;
+    }
+    .verify-box h2 {
+        margin-bottom: 15px;
+        color: #183153;
+    }
+    .verify-box p {
+        color: #555;
+        margin-bottom: 25px;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+    .verify-box a {
+        display: inline-block;
+        padding: 10px 28px;
+        background: #183153;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+    }
+    .verify-box a:hover { background: #0f2248; }
+  </style>
+</head>
+<body>
+  <div class="verify-box">
+    <% if (success) { %>
+      <i class="fa-solid fa-circle-check" style="color:#27ae60;"></i>
+      <h2>Email Verified!</h2>
+      <p><%= message %></p>
+      <a href="/login">Go to Login</a>
+    <% } else { %>
+      <i class="fa-solid fa-circle-xmark" style="color:#c0392b;"></i>
+      <h2>Verification Failed</h2>
+      <p><%= message %></p>
+      <a href="/signup">Sign Up Again</a>
+    <% } %>
+  </div>
+</body>
+</html>

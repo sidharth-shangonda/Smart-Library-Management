@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse Books</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/global.css"/>
+  <link rel="stylesheet" href="/css/browse.css"/>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="nav-title border">
+        <i class="fa-solid fa-book"></i>
+        <span>LIBRARY MANAGEMENT</span>
+      </div>
+      <div class="nav-right">
+        <a href="/dashboard" class="back-nav-link border">
+          <i class="fa-solid fa-arrow-left"></i> Dashboard
+        </a>
+        <a href="/issued_books" class="back-nav-link border">
+          <i class="fa-solid fa-book-open"></i> My Books
+        </a>
+        <button id="profileBtn"><i class="fa-solid fa-circle-user"></i></button>
+        <div class="nav-logout border">
+          <form action="/logout" method="POST">
+            <button type="submit" class="btn">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <h2>Search</h2>
+      <input type="text" id="search-input" placeholder="Search by title, author, publisher..."/>
+      <button id="search-btn" aria-label="Search"><i class="fa fa-search"></i></button>
+    </div>
+  </header>
+
+  <% if (error === 'already_borrowed') { %>
+    <div class="alert-banner alert-warning">⚠️ You have already borrowed this book. Please return it before borrowing again.</div>
+  <% } else if (error === 'out_of_stock') { %>
+    <div class="alert-banner alert-error">❌ Sorry, this book is currently out of stock.</div>
+  <% } %>
+
+  <div id="book-results" class="book-list"></div>
+  <button id="show-more" class="show-more" style="display:none;">Show More</button>
+
+  <div id="profileModal" class="profileModal">
+    <span id="closeModal">&times;</span>
+    <i class="fa-solid fa-circle-user"></i>
+    <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+    <p><strong>User ID:</strong>  <span id="modalUserId"></span></p>
+    <p><strong>Email:</strong>    <span id="modalEmail"></span></p>
+  </div>
+  <div id="modalBackdrop"></div>
+
+  <script src="/js/profile.js"></script>
+  <script src="/js/browse.js"></script>
+</body>
+</html>

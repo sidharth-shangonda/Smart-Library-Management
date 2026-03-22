@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Manage Books</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/global.css"/>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+  <div class="admin-container">
+    <h1 class="admin-heading">Manage Books</h1>
+
+    <% if (message) { %>
+      <div class="alert-banner <%= message.includes('success') ? 'alert-success' : 'alert-error' %>"><%= message %></div>
+    <% } %>
+
+    <!-- Add Book Form -->
+    <div class="admin-card">
+      <h2>Add New Book</h2>
+      <form action="/admin/books/add" method="POST" class="admin-form">
+        <div class="form-row">
+          <input type="text"   name="title"          placeholder="Title *"        required/>
+          <input type="text"   name="author"          placeholder="Author"/>
+          <input type="text"   name="publisher"       placeholder="Publisher"/>
+          <input type="number" name="published_year"  placeholder="Year"/>
+          <input type="number" name="totalStock"      placeholder="Stock" value="1" min="1"/>
+          <button type="submit" class="btn">Add Book</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Search -->
+    <form method="GET" action="/admin/books" class="admin-search">
+      <input type="text" name="q" value="<%= q %>" placeholder="Search books..."/>
+      <button type="submit" class="btn">Search</button>
+    </form>
+
+    <!-- Books Table -->
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr><th>ID</th><th>Title</th><th>Author</th><th>Publisher</th><th>Year</th><th>Stock</th><th>Available</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <% books.forEach(book => { %>
+            <tr>
+              <td><%= book.book_id %></td>
+              <td><%= book.title %></td>
+              <td><%= book.author || '-' %></td>
+              <td><%= book.publisher || '-' %></td>
+              <td><%= book.published_year || '-' %></td>
+              <td><%= book.totalStock %></td>
+              <td class="<%= book.availableStock === 0 ? 'text-danger' : 'text-success' %>"><%= book.availableStock %></td>
+              <td>
+                <button class="btn btn-sm" onclick="openEditModal('<%= book._id %>','<%= book.title.replace(/'/g,`\\'`) %>','<%= book.author %>','<%= book.publisher %>','<%= book.published_year %>','<%= book.totalStock %>')">Edit</button>
+                <form action="/admin/books/delete/<%= book._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this book?')">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <% if (page > 1) { %><a href="/admin/books?q=<%= q %>&page=<%= page-1 %>" class="btn btn-sm">← Prev</a><% } %>
+      <span>Page <%= page %> of <%= totalPages %></span>
+      <% if (page < totalPages) { %><a href="/admin/books?q=<%= q %>&page=<%= page+1 %>" class="btn btn-sm">Next →</a><% } %>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal" style="display:none;">
+    <div class="modal-box">
+      <span id="closeEditModal" class="modal-close">&times;</span>
+      <h2>Edit Book</h2>
+      <form id="editForm" method="POST" class="admin-form">
+        <input type="text"   id="editTitle"    name="title"         placeholder="Title *" required/>
+        <input type="text"   id="editAuthor"   name="author"        placeholder="Author"/>
+        <input type="text"   id="editPublisher" name="publisher"    placeholder="Publisher"/>
+        <input type="number" id="editYear"     name="published_year" placeholder="Year"/>
+        <input type="number" id="editStock"    name="totalStock"    placeholder="Stock" min="1"/>
+        <button type="submit" class="btn" style="margin-top:10px;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+  <div id="editBackdrop" class="modal-backdrop" style="display:none;"></div>
+
+  <script>
+    function openEditModal(id, title, author, publisher, year, stock) {
+        document.getElementById('editForm').action = `/admin/books/edit/${id}`;
+        document.getElementById('editTitle').value     = title;
+        document.getElementById('editAuthor').value    = author;
+        document.getElementById('editPublisher').value = publisher;
+        document.getElementById('editYear').value      = year;
+        document.getElementById('editStock').value     = stock;
+        document.getElementById('editModal').style.display    = 'flex';
+        document.getElementById('editBackdrop').style.display = 'block';
+    }
+    document.getElementById('closeEditModal').onclick = () => {
+        document.getElementById('editModal').style.display    = 'none';
+        document.getElementById('editBackdrop').style.display = 'none';
+    };
+    document.getElementById('editBackdrop').onclick = () => {
+        document.getElementById('editModal').style.display    = 'none';
+        document.getElementById('editBackdrop').style.display = 'none';
+    };
+  </script>
+</body>
+</html>
