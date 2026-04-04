@@ -26,24 +26,42 @@
     </div>
   </header>
 
-  <div class="dashboard-container">
-    <h1>Welcome, <%= username %> 👋</h1>
-    <p>What would you like to do today?</p>
-    <div class="dashboard-options">
-      <a href="/browse"       class="dashboard-btn"><i class="fa-solid fa-magnifying-glass"></i> Browse & Search Books</a>
-      <a href="/issued_books" class="dashboard-btn"><i class="fa-solid fa-book-open"></i> My Issued Books</a>
-    </div>
-  </div>
+  <main class="dashboard-page">
+    <section class="dashboard-hero">
+      <div class="dashboard-copy">
+        <span class="eyebrow">Your Library, Curated</span>
+        <h1>Welcome, <%= username %></h1>
+        <p>Manage reading, browse titles, and keep track of what you have issued from one calm, focused space.</p>
+      </div>
 
-  <!-- Recent books section -->
-  <div class="books-section">
-    <h2 class="books-heading"><i class="fa-solid fa-fire" style="color:#e67e22;"></i> Recently Added Books</h2>
-    <div id="book-results" class="book-list"></div>
-    <div id="loading" class="loading-msg" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i> Loading books...</div>
-    <button id="show-more" class="show-more-btn" style="display:none;">Load More Books</button>
-  </div>
+      <div class="dashboard-actions">
+        <a href="/browse" class="dashboard-btn browse-btn">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          Browse & Search Books
+        </a>
+        <a href="/issued_books" class="dashboard-btn issued-btn">
+          <i class="fa-solid fa-book-open"></i>
+          My Issued Books
+        </a>
+      </div>
+    </section>
 
-  <!-- Profile Modal -->
+    <section class="books-section">
+      <div class="books-section-header">
+        <h2 class="books-heading">
+          <i class="fa-solid fa-fire"></i>
+          Recently Added Books
+        </h2>
+        <p class="books-subtitle">Fresh titles added to the catalog.</p>
+      </div>
+      <div id="book-results" class="book-list"></div>
+      <div id="loading" class="loading-msg" style="display:none;">
+        <i class="fa-solid fa-spinner fa-spin"></i> Loading books...
+      </div>
+      <button id="show-more" class="show-more-btn" style="display:none;">Load More Books</button>
+    </section>
+  </main>
+
   <div id="profileModal" class="profileModal">
     <span id="closeModal">&times;</span>
     <i class="fa-solid fa-circle-user"></i>

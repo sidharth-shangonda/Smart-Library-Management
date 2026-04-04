@@ -34,17 +34,17 @@ const run = async () => {
     const raw = require("./data/books.json");
     await Book.insertMany(raw.map(b => ({ ...b, totalStock: 3, availableStock: 3 })));
 
-    const sampleBooks = [
-        { book_id: 1,  title: "The Great Gatsby",          author: "F. Scott Fitzgerald", publisher: "Scribner",          published_year: 1925 },
-        { book_id: 2,  title: "To Kill a Mockingbird",     author: "Harper Lee",           publisher: "J. B. Lippincott", published_year: 1960 },
-        { book_id: 3,  title: "1984",                      author: "George Orwell",        publisher: "Secker & Warburg", published_year: 1949 },
-        { book_id: 4,  title: "Harry Potter and the Philosopher's Stone", author: "J.K. Rowling", publisher: "Bloomsbury", published_year: 1997 },
-        { book_id: 5,  title: "The Alchemist",             author: "Paulo Coelho",         publisher: "HarperCollins",    published_year: 1988 },
-    ].map(b => ({ ...b, totalStock: 3, availableStock: 3 }));
+    // const sampleBooks = [
+    //     { book_id: 1,  title: "The Great Gatsby",          author: "F. Scott Fitzgerald", publisher: "Scribner",          published_year: 1925 },
+    //     { book_id: 2,  title: "To Kill a Mockingbird",     author: "Harper Lee",           publisher: "J. B. Lippincott", published_year: 1960 },
+    //     { book_id: 3,  title: "1984",                      author: "George Orwell",        publisher: "Secker & Warburg", published_year: 1949 },
+    //     { book_id: 4,  title: "Harry Potter and the Philosopher's Stone", author: "J.K. Rowling", publisher: "Bloomsbury", published_year: 1997 },
+    //     { book_id: 5,  title: "The Alchemist",             author: "Paulo Coelho",         publisher: "HarperCollins",    published_year: 1988 },
+    // ].map(b => ({ ...b, totalStock: 3, availableStock: 3 }));
 
-    await Book.insertMany(sampleBooks);
-    console.log(`📚  Seeded ${sampleBooks.length} sample books (stock: 3 each)`);
-    console.log("\n✅  Done! Run `node index.js` to start.\n");
+    // await Book.insertMany(sampleBooks);
+    // console.log(`📚  Seeded ${sampleBooks.length} sample books (stock: 3 each)`);
+    // console.log("\n✅  Done! Run `node index.js` to start.\n");
 
     await mongoose.disconnect();
     process.exit(0);

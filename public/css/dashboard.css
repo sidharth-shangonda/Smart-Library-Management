@@ -1,79 +1,223 @@
-.dashboard-container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+:root {
+    --dashboard-ink: #1f2d3d;
+    --dashboard-muted: #667385;
+    --dashboard-accent: #b68f58;
+    --dashboard-accent-strong: #8f6b3e;
+    --dashboard-surface: rgba(251, 248, 242, 0.9);
+    --dashboard-surface-strong: rgba(255, 255, 255, 0.96);
+    --dashboard-border: rgba(31, 45, 61, 0.1);
+    --dashboard-shadow: 0 20px 60px rgba(31, 45, 61, 0.16);
 }
 
-.dashboard-container h1 {
-    padding: 10px;
-    text-align: center;
-    color: #2d89ef;
+body {
+    min-height: 100vh;
+    background:
+        linear-gradient(135deg, rgba(246, 242, 235, 0.76), rgba(232, 239, 245, 0.7)),
+        url("/images/dashboard.jpg.avif") center center / cover fixed no-repeat;
+    color: var(--dashboard-ink);
 }
 
-.dashboard-container p {
-    padding: 20px;
+.dashboard-page {
+    width: min(1120px, calc(100% - 32px));
+    margin: 28px auto 48px;
+    display: grid;
+    gap: 24px;
 }
 
-.dashboard-options {
-    display: flex;
-    flex-direction: column;
+.dashboard-hero,
+.books-section {
+    background: var(--dashboard-surface);
+    border: 1px solid var(--dashboard-border);
+    border-radius: 26px;
+    box-shadow: var(--dashboard-shadow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.dashboard-hero {
+    padding: 34px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
+    gap: 24px;
+    align-items: end;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(31, 45, 61, 0.02));
+    pointer-events: none;
+}
+
+.dashboard-copy,
+.dashboard-actions,
+.books-section-header {
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(31, 45, 61, 0.06);
+    color: var(--dashboard-accent-strong);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dashboard-copy h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    color: var(--dashboard-ink);
+    margin-bottom: 14px;
+}
+
+.dashboard-copy p {
+    max-width: 58ch;
+    color: var(--dashboard-muted);
+    font-size: 1.04rem;
+    line-height: 1.7;
+}
+
+.dashboard-actions {
+    display: grid;
+    gap: 14px;
+    align-content: end;
 }
 
 .dashboard-btn {
-    display: block;
-    text-align: center;
-    margin: 10px 0;
-    padding: 10px 20px;
-    background-color: #2c3e50;
-    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 16px 22px;
+    border-radius: 18px;
     text-decoration: none;
-    border-radius: 5px;
-    width: 70%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+    box-shadow: 0 12px 26px rgba(31, 45, 61, 0.12);
+    border: 1px solid transparent;
+    font-weight: 700;
+}
+
+.browse-btn {
+    background: linear-gradient(135deg, #1f2d3d, #33485e);
+    color: #fffdf7;
+}
+
+.issued-btn {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--dashboard-ink);
+    border-color: rgba(31, 45, 61, 0.08);
 }
 
 .dashboard-btn:hover {
-    background-color: #34495e;
+    box-shadow: 0 16px 34px rgba(31, 45, 61, 0.18);
+    transform: translateY(-1px);
+}
+
+.browse-btn:hover {
+    background: linear-gradient(135deg, #27384b, #415972);
+}
+
+.issued-btn:hover {
+    background: rgba(255, 255, 255, 0.92);
 }
 
 /* ── Books Section ─────────────────────────────────────────────────────────── */
 .books-section {
-    max-width: 900px;
-    margin: 20px auto 40px;
-    padding: 0 20px;
+    padding: 26px 28px 30px;
+}
+
+.books-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 18px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(31, 45, 61, 0.08);
 }
 
 .books-heading {
-    font-size: 1.4rem;
-    color: #183153;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.35rem;
+    color: var(--dashboard-ink);
+}
+
+.books-heading i {
+    color: var(--dashboard-accent);
+}
+
+.books-subtitle {
+    color: var(--dashboard-muted);
+    font-size: 0.95rem;
 }
 
 .show-more-btn {
     display: block;
     margin: 20px auto;
-    padding: 10px 30px;
-    background-color: #183153;
-    color: white;
+    padding: 11px 30px;
+    background: linear-gradient(135deg, #1f2d3d, #344b63);
+    color: #fffdf7;
     border: none;
-    border-radius: 8px;
+    border-radius: 999px;
     font-size: 15px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 12px 24px rgba(31, 45, 61, 0.16);
 }
 
 .show-more-btn:hover {
-    background-color: #0f2248;
+    background: linear-gradient(135deg, #2a3b4e, #445d78);
+    transform: translateY(-1px);
 }
 
 .loading-msg {
     text-align: center;
-    color: #777;
+    color: var(--dashboard-muted);
     padding: 15px;
     font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-page {
+        width: min(100% - 22px, 1120px);
+        margin: 18px auto 32px;
+        gap: 18px;
+    }
+
+    .dashboard-hero {
+        grid-template-columns: 1fr;
+        padding: 24px 18px;
+        border-radius: 22px;
+    }
+
+    .books-section {
+        padding: 20px 16px 22px;
+    }
+
+    .dashboard-actions {
+        width: 100%;
+    }
+
+    .books-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-btn {
+        width: 100%;
+    }
 }
