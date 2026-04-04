@@ -4,7 +4,6 @@
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bcrypt   = require("bcrypt");
 const connectDB = require("./config/db");
 const User      = require("./models/User");
 const Book      = require("./models/Book");
@@ -25,8 +24,7 @@ const run = async () => {
     console.log("📇  Indexes created");
 
     // Create admin user
-    const adminPass = await bcrypt.hash("admin123", 10);
-    await User.create({ username: "admin", email: "admin@library.com", password: adminPass, isVerified: true, isAdmin: true });
+    await User.create({ username: "admin", email: "admin@library.com", password: "admin123", isVerified: true, isAdmin: true });
     console.log("👑  Admin user created  →  admin / admin123");
     console.log("    ⚠️  Change admin password after first login!");
 

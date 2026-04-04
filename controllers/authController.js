@@ -59,7 +59,7 @@ const verifyEmail = async (req, res) => {
 // GET /login
 const getLogin = (req, res) => res.render("login", { message: null });
 
-// POST /login
+// POST /login  (users only — admins use /admin-login)
 const postLogin = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password)
@@ -67,16 +67,22 @@ const postLogin = async (req, res) => {
     try {
         const user = await User.findOne({ username });
         if (!user) return res.render("login", { message: "Invalid credentials." });
-        if (!user.isVerified) return res.render("login", { message: "Please verify your email before logging in. Check your inbox." });
+
+        // Block admins from user login portal
+        if (user.isAdmin)
+            return res.render("login", { message: "Admin accounts must use the Admin Login portal.", type: "error" });
+
+        if (!user.isVerified)
+            return res.render("login", { message: "Please verify your email before logging in. Check your inbox." });
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) return res.render("login", { message: "Invalid credentials." });
 
         req.session.user_id  = user._id.toString();
         req.session.username = user.username;
-        req.session.isAdmin  = user.isAdmin;
+        req.session.isAdmin  = false;
 
-        res.redirect(user.isAdmin ? "/admin" : "/dashboard");
+        res.redirect("/dashboard");
     } catch (err) {
         console.error("Login error:", err);
         res.render("login", { message: "Login failed. Please try again." });
@@ -109,7 +115,6 @@ const postForgotPassword = async (req, res) => {
     if (!email) return res.render("forgot_password", { message: "Email is required.", type: "error" });
     try {
         const user = await User.findOne({ email });
-        // Always show success to prevent email enumeration
         if (!user) return res.render("forgot_password", {
             message: "If that email exists, a reset link has been sent.",
             type: "success",
@@ -154,7 +159,7 @@ const postResetPassword = async (req, res) => {
         const user = await User.findOne({ resetToken: token, resetExpires: { $gt: new Date() } });
         if (!user) return res.render("verify_status", { success: false, message: "Reset link is invalid or expired." });
 
-        user.password     = password; // pre-save hook will hash it
+        user.password     = password;
         user.resetToken   = null;
         user.resetExpires = null;
         await user.save();
@@ -165,15 +170,6 @@ const postResetPassword = async (req, res) => {
         console.error("Reset password error:", err);
         res.render("reset_password", { token, message: "Something went wrong.", type: "error" });
     }
-};
-
-module.exports = {
-    getSignup, postSignup,
-    verifyEmail,
-    getLogin, postLogin,
-    postLogout, getProfile,
-    getForgotPassword, postForgotPassword,
-    getResetPassword, postResetPassword,
 };
 
 // POST /resend-verification
@@ -197,4 +193,50 @@ const resendVerification = async (req, res) => {
     }
 };
 
-module.exports.resendVerification = resendVerification;
+// ── Admin Login ───────────────────────────────────────────────────────────────
+
+// GET /admin-login
+const getAdminLogin = (req, res) => {
+    if (req.session.user_id && req.session.isAdmin) return res.redirect("/admin");
+    res.render("admin_login", { message: null });
+};
+
+// POST /admin-login
+const postAdminLogin = async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password)
+        return res.render("admin_login", { message: "All fields are required." });
+    try {
+        const user = await User.findOne({ username });
+
+        if (!user || !user.isAdmin)
+            return res.render("admin_login", { message: "Invalid admin credentials." });
+
+        if (!user.isVerified)
+            return res.render("admin_login", { message: "Account not verified." });
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch)
+            return res.render("admin_login", { message: "Invalid admin credentials." });
+
+        req.session.user_id  = user._id.toString();
+        req.session.username = user.username;
+        req.session.isAdmin  = true;
+
+        res.redirect("/admin");
+    } catch (err) {
+        console.error("Admin login error:", err);
+        res.render("admin_login", { message: "Login failed. Please try again." });
+    }
+};
+
+module.exports = {
+    getSignup, postSignup,
+    verifyEmail,
+    getLogin, postLogin,
+    postLogout, getProfile,
+    getForgotPassword, postForgotPassword,
+    getResetPassword, postResetPassword,
+    resendVerification,
+    getAdminLogin, postAdminLogin,
+};

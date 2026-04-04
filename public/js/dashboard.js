@@ -1,6 +1,7 @@
 (function () {
     let currentPage = 1;
     const LIMIT = 25;
+    const DEFAULT_COVER = '/images/default-cover.svg';
 
     const bookResults = document.getElementById('book-results');
     const showMoreBtn = document.getElementById('show-more');
@@ -20,9 +21,25 @@
         return `
             <form action="/borrow" method="POST" style="margin-left:20px;">
                 <input type="hidden" name="book_id"   value="${book.book_id}"/>
-                <input type="hidden" name="book_name" value="${book.title}"/>
+                <input type="hidden" name="book_name" value="${escapeHtml(book.title)}"/>
                 <button type="submit" class="btn">Borrow</button>
             </form>`;
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function coverImg(book) {
+        const src = book.cover_image || DEFAULT_COVER;
+        return `<img src="${src}" alt="Cover of ${escapeHtml(book.title)}"
+                     onerror="this.onerror=null;this.src='${DEFAULT_COVER}'"
+                     style="width:80px;height:120px;object-fit:cover;border-radius:4px;flex-shrink:0;"/>`;
     }
 
     function loadBooks() {
@@ -46,11 +63,11 @@
                     card.className = 'book-card';
                     card.innerHTML = `
                         <div style="display:flex;gap:15px;flex:1;">
-                            <img src="${book.cover_image || '/images/default-cover.jpg'}" alt="Cover"/>
+                            ${coverImg(book)}
                             <div class="book-details">
-                                <div class="book-title">${book.title}</div>
-                                <div class="book-info"><strong>Author:</strong> ${book.author || 'N/A'}</div>
-                                <div class="book-info"><strong>Publisher:</strong> ${book.publisher || 'N/A'}</div>
+                                <div class="book-title">${escapeHtml(book.title)}</div>
+                                <div class="book-info"><strong>Author:</strong> ${escapeHtml(book.author || 'N/A')}</div>
+                                <div class="book-info"><strong>Publisher:</strong> ${escapeHtml(book.publisher || 'N/A')}</div>
                                 <div class="book-info"><strong>Year:</strong> ${book.published_year || 'N/A'}</div>
                                 <div class="book-info"><strong>Book ID:</strong> ${book.book_id}</div>
                                 <div style="margin-top:6px;">${stockBadge(book)}</div>

@@ -10,6 +10,18 @@
     profileModal.style.display  = 'none';
     modalBackdrop.style.display = 'none';
 
+    const openProfileModal = () => {
+        profileModal.style.display  = 'flex';
+        modalBackdrop.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeProfileModal = () => {
+        profileModal.style.display  = 'none';
+        modalBackdrop.style.display = 'none';
+        document.body.style.overflow = '';
+    };
+
     profileBtn.addEventListener('click', () => {
         fetch('/profile')
             .then(res => res.json())
@@ -17,8 +29,7 @@
                 document.getElementById('modalUsername').textContent = data.username;
                 document.getElementById('modalUserId').textContent   = data.user_id;
                 document.getElementById('modalEmail').textContent    = data.email;
-                profileModal.style.display  = 'flex';
-                modalBackdrop.style.display = 'block';
+                openProfileModal();
             })
             .catch(err => {
                 console.error('Profile fetch error:', err);
@@ -26,11 +37,11 @@
             });
     });
 
-    const closeProfileModal = () => {
-        profileModal.style.display  = 'none';
-        modalBackdrop.style.display = 'none';
-    };
-
     closeModal.addEventListener('click', closeProfileModal);
     modalBackdrop.addEventListener('click', closeProfileModal);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileModal.style.display === 'flex') {
+            closeProfileModal();
+        }
+    });
 })();
