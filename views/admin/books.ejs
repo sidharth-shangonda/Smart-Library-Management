@@ -25,6 +25,7 @@
           <input type="text"   name="author"          placeholder="Author"/>
           <input type="text"   name="publisher"       placeholder="Publisher"/>
           <input type="number" name="published_year"  placeholder="Year"/>
+          <input type="url"    name="cover_image"     placeholder="Cover Image URL (optional)"/>
           <input type="number" name="totalStock"      placeholder="Stock" value="1" min="1"/>
           <button type="submit" class="btn">Add Book</button>
         </div>
@@ -41,12 +42,15 @@
     <div class="table-wrap">
       <table class="admin-table">
         <thead>
-          <tr><th>ID</th><th>Title</th><th>Author</th><th>Publisher</th><th>Year</th><th>Stock</th><th>Available</th><th>Actions</th></tr>
+          <tr><th>ID</th><th>Cover</th><th>Title</th><th>Author</th><th>Publisher</th><th>Year</th><th>Stock</th><th>Available</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <% books.forEach(book => { %>
             <tr>
               <td><%= book.book_id %></td>
+              <td>
+                <img src="<%= book.cover_image || '/images/default-cover.svg' %>" alt="Cover" width="40" height="60" style="object-fit:cover;border-radius:4px;" onerror="this.onerror=null;this.src='/images/default-cover.svg';"/>
+              </td>
               <td><%= book.title %></td>
               <td><%= book.author || '-' %></td>
               <td><%= book.publisher || '-' %></td>
@@ -54,7 +58,7 @@
               <td><%= book.totalStock %></td>
               <td class="<%= book.availableStock === 0 ? 'text-danger' : 'text-success' %>"><%= book.availableStock %></td>
               <td>
-                <button class="btn btn-sm" onclick="openEditModal('<%= book._id %>','<%= book.title.replace(/'/g,`\\'`) %>','<%= book.author %>','<%= book.publisher %>','<%= book.published_year %>','<%= book.totalStock %>')">Edit</button>
+                <button class="btn btn-sm" onclick="openEditModal('<%= book._id %>','<%= book.title.replace(/'/g,`\\'`) %>','<%= (book.author || '').replace(/'/g,`\\'`) %>','<%= (book.publisher || '').replace(/'/g,`\\'`) %>','<%= book.published_year || '' %>','<%= book.totalStock %>','<%= (book.cover_image || '').replace(/'/g,`\\'`) %>')">Edit</button>
                 <form action="/admin/books/delete/<%= book._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this book?')">
                   <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 </form>
@@ -83,6 +87,7 @@
         <input type="text"   id="editAuthor"   name="author"        placeholder="Author"/>
         <input type="text"   id="editPublisher" name="publisher"    placeholder="Publisher"/>
         <input type="number" id="editYear"     name="published_year" placeholder="Year"/>
+        <input type="url"    id="editCoverImage" name="cover_image" placeholder="Cover Image URL (optional)"/>
         <input type="number" id="editStock"    name="totalStock"    placeholder="Stock" min="1"/>
         <button type="submit" class="btn" style="margin-top:10px;">Save Changes</button>
       </form>
@@ -91,12 +96,13 @@
   <div id="editBackdrop" class="modal-backdrop" style="display:none;"></div>
 
   <script>
-    function openEditModal(id, title, author, publisher, year, stock) {
+    function openEditModal(id, title, author, publisher, year, stock, coverImage) {
         document.getElementById('editForm').action = `/admin/books/edit/${id}`;
         document.getElementById('editTitle').value     = title;
         document.getElementById('editAuthor').value    = author;
         document.getElementById('editPublisher').value = publisher;
         document.getElementById('editYear').value      = year;
+        document.getElementById('editCoverImage').value = coverImage || '';
         document.getElementById('editStock').value     = stock;
         document.getElementById('editModal').style.display    = 'flex';
         document.getElementById('editBackdrop').style.display = 'block';

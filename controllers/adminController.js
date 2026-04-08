@@ -8,6 +8,12 @@ const formatDate = (dateVal) => {
     return `${String(d.getDate()).padStart(2,"0")}-${String(d.getMonth()+1).padStart(2,"0")}-${d.getFullYear()}`;
 };
 
+const normalizeCoverImage = (value) => {
+    if (typeof value !== "string") return null;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+};
+
 // GET /admin
 const getAdminDashboard = async (req, res) => {
     try {
@@ -41,12 +47,22 @@ const getAdminBooks = async (req, res) => {
 
 // POST /admin/books/add
 const addBook = async (req, res) => {
-    const { title, author, publisher, published_year, totalStock } = req.body;
+    const { title, author, publisher, published_year, totalStock, cover_image } = req.body;
     try {
         const lastBook = await Book.findOne().sort({ book_id: -1 });
         const newId    = lastBook ? lastBook.book_id + 1 : 1;
         const stock    = parseInt(totalStock) || 1;
-        await Book.create({ book_id: newId, title, author, publisher, published_year: parseInt(published_year) || null, totalStock: stock, availableStock: stock });
+        const coverImage = normalizeCoverImage(cover_image);
+        await Book.create({
+            book_id: newId,
+            title,
+            author,
+            publisher,
+            published_year: parseInt(published_year) || null,
+            cover_image: coverImage,
+            totalStock: stock,
+            availableStock: stock,
+        });
         res.redirect("/admin/books?message=Book added successfully");
     } catch (err) {
         console.error("Add book error:", err);
@@ -56,17 +72,28 @@ const addBook = async (req, res) => {
 
 // POST /admin/books/edit/:id
 const editBook = async (req, res) => {
-    const { title, author, publisher, published_year, totalStock } = req.body;
+    const { title, author, publisher, published_year, totalStock, cover_image } = req.body;
     try {
         const book    = await Book.findById(req.params.id);
         const oldStock = book.totalStock;
         const newStock = parseInt(totalStock) || 1;
         const diff     = newStock - oldStock;
-        await Book.findByIdAndUpdate(req.params.id, {
-            title, author, publisher,
+        const coverImage = normalizeCoverImage(cover_image);
+
+        const update = {
+            title,
+            author,
+            publisher,
             published_year: parseInt(published_year) || null,
             totalStock: newStock,
             availableStock: Math.max(0, book.availableStock + diff),
+        };
+
+        // Keep current cover when left blank; update only when URL is provided.
+        if (coverImage !== null) update.cover_image = coverImage;
+
+        await Book.findByIdAndUpdate(req.params.id, {
+            ...update,
         });
         res.redirect("/admin/books?message=Book updated successfully");
     } catch (err) {

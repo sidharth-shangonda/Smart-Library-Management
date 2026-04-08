@@ -1,0 +1,144 @@
+/* ─────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVE — paste into public/css/global.css
+   (or into each page's CSS file if you don't have global.css)
+───────────────────────────────────────────────────────────── */
+
+/* ── Viewport meta is already in your EJS heads — good ────── */
+
+/* ── Base mobile resets ──────────────────────────────────── */
+* {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;       /* removes 300ms tap delay */
+}
+img { max-width: 100%; height: auto; }
+input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
+
+/* ── Navbar ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .navbar {
+        padding: 0 12px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 56px;
+        gap: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    .nav-title span { font-size: 1rem; }
+    .nav-right { gap: 6px; }
+    .admin-nav-link { font-size: 12px; padding: 4px 8px; }
+}
+
+/* ── Auth pages ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .log_in, .signup {
+        width: 95vw;
+        min-height: auto;
+        padding: 24px 16px;
+        border-radius: 12px;
+    }
+    .log_in h1, .signup h1 { font-size: 26px; margin-top: 16px; }
+    .btn-auth { height: 46px; font-size: 16px; }
+    .input-box input { font-size: 15px; height: 44px; }
+}
+
+/* ── Hero section ───────────────────────────────────────── */
+@media (max-width: 600px) {
+    .hero-sec h2 { font-size: 1.8rem; }
+    .hero-sec p  { font-size: 1rem; }
+    .hero-sec a  { width: 90%; font-size: 0.9rem; }
+}
+
+/* ── Features grid ──────────────────────────────────────── */
+@media (max-width: 600px) {
+    .features { padding: 30px 16px; gap: 16px; }
+    .feature-box { padding: 20px 16px; }
+}
+
+/* ── Book cards ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .book-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+    }
+    .book-card img {
+        width: 60px;
+        height: 90px;
+    }
+    .book-card form,
+    .book-card button { margin-left: 0 !important; width: 100%; }
+    .book-card form button,
+    .borrow-btn { width: 100%; padding: 10px; font-size: 14px; }
+}
+
+/* ── Issued books page ──────────────────────────────────── */
+@media (max-width: 600px) {
+    .issued-container { margin: 12px; }
+    .book-list .book-card { flex-direction: column; }
+    .return-button { width: 100%; padding: 12px; margin-top: 10px; }
+    .fine-badge, .safe-badge, .warning-badge, .due-today-badge {
+        font-size: 12px;
+    }
+}
+
+/* ── Admin tables ───────────────────────────────────────── */
+@media (max-width: 768px) {
+    .admin-container { padding: 0 10px; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .admin-table { min-width: 600px; }         /* scroll horizontally */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .quick-links { flex-direction: column; }
+    .quick-btn { justify-content: center; }
+    .admin-search { flex-direction: column; }
+    .admin-search input { width: 100%; }
+    .form-row { flex-direction: column; }
+    .form-row input { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .admin-heading { font-size: 1.3rem; }
+}
+
+/* ── Browse search bar ──────────────────────────────────── */
+@media (max-width: 600px) {
+    .search-container {
+        max-width: 100%;
+        margin: 12px;
+        width: calc(100% - 24px);
+    }
+    .search-container h2 { font-size: 14px; padding: 8px; }
+    #search-input { font-size: 14px; padding: 10px 8px; }
+}
+
+/* ── Dashboard page ─────────────────────────────────────── */
+@media (max-width: 600px) {
+    .dashboard-page { padding: 0; }
+    .dashboard-hero { padding: 24px 16px; }
+    .dashboard-actions { flex-direction: column; gap: 10px; }
+    .dashboard-btn { justify-content: center; padding: 14px; font-size: 15px; }
+    .books-section { padding: 16px 12px; }
+}
+
+/* ── Modal ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .modal-box { width: 95vw; padding: 20px 16px; }
+    .profileModal {
+        width: 90vw !important;
+        left: 5vw !important;
+        right: 5vw !important;
+    }
+}
+
+/* ── CTA section ────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .cta-section h2 { font-size: 1.4rem; }
+    .cta-section a  { display: block; width: 90%; margin: 0 auto; text-align: center; }
+}
+
+/* ── Show more button ───────────────────────────────────── */
+@media (max-width: 600px) {
+    .show-more { font-size: 14px; padding: 10px 20px; }
+}

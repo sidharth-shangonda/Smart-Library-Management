@@ -13,30 +13,76 @@ const pageRoutes        = require("./routes/pageRoutes");
 const adminRoutes       = require("./routes/adminRoutes");
 
 const app = express();
+const isProd = process.env.NODE_ENV === "production";
 
-connectDB().then(() => startCronJobs());
+// ── Trust Railway/Render/Nginx proxy ─────────────────────────────
+app.set("trust proxy", 1);
 
-app.use(cors());
+// ── Security & performance middleware ────────────────────────────
+// Install: npm install helmet compression
+try {
+    const helmet      = require("helmet");
+    const compression = require("compression");
+    app.use(helmet({
+        contentSecurityPolicy: false,   // adjust if you add CSP later
+        crossOriginEmbedderPolicy: false,
+    }));
+    app.use(compression());             // gzip — ~70% smaller responses on mobile
+} catch {
+    console.warn("⚠️  helmet/compression not installed — run: npm install helmet compression");
+}
+
+app.use(cors({
+    origin: process.env.APP_URL || "http://localhost:8080",
+    credentials: true,
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(session({
     secret:            process.env.SESSION_SECRET,
     resave:            false,
     saveUninitialized: false,
     store:             MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie:            { maxAge: 1000 * 60 * 60 * 24 },
+    cookie: {
+        maxAge:   1000 * 60 * 60 * 24,   // 1 day
+        secure:   isProd,                 // HTTPS only in production
+        httpOnly: true,                   // JS cannot read cookie
+        sameSite: "lax",
+    },
 }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), {
+    maxAge: isProd ? "7d" : 0,          // cache static files 7 days in prod
+}));
 
+// ── Routes ────────────────────────────────────────────────────────
 app.use("/",      pageRoutes);
 app.use("/",      authRoutes);
 app.use("/",      bookRoutes);
 app.use("/admin", adminRoutes);
 
-app.use((req, res) => res.status(404).send("404 - Page Not Found"));
+// ── 404 ───────────────────────────────────────────────────────────
+app.use((req, res) => {
+    res.status(404).render("verify_status", {
+        success: false,
+        message: "Page not found (404). The URL may have changed or the page doesn't exist.",
+    });
+});
 
+// ── Global error handler ──────────────────────────────────────────
+app.use((err, req, res, next) => {
+    console.error("❌ Unhandled error:", err);
+    res.status(500).send("Something went wrong. Please try again.");
+});
+
+// ── Start ─────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+connectDB().then(() => {
+    startCronJobs();
+    app.listen(PORT, () =>
+        console.log(`🚀 Server running → ${isProd ? process.env.APP_URL : `http://localhost:${PORT}`}`)
+    );
+});
