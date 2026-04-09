@@ -3,6 +3,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 16px;
     background-image: url("/images/lib.webp");
     background-size: cover;
     background-position: center;
@@ -17,8 +18,10 @@ body {
     background: transparent;
     backdrop-filter: blur(10px);
     width: 420px;
+    max-width: 100%;
     border-radius: 15px;
     padding: 20px;
+    box-shadow: 0 16px 34px rgba(10, 24, 39, 0.28);
 }
 
 .log_in {
@@ -101,6 +104,11 @@ body {
     margin: 10px;
     font-size: 16px;
     color: wheat;
+    text-align: center;
+}
+
+.register-link-top {
+    margin-top: 10px;
 }
 
 .register-link a,
@@ -134,4 +142,86 @@ body {
     border-left: 4px solid #27ae60;
     text-align: center;
     line-height: 1.5;
+}
+
+.resend-wrap {
+    margin-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    padding-top: 14px;
+    width: 100%;
+}
+
+.resend-title {
+    color: wheat;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.resend-form {
+    display: flex;
+    gap: 8px;
+}
+
+.resend-input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #183153;
+    font-size: 13px;
+    outline: none;
+}
+
+.resend-btn {
+    background: #183153;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.resend-btn:hover {
+    background: #0f2248;
+}
+
+@media (max-width: 520px) {
+    body {
+        align-items: flex-start;
+        padding: 14px 10px 20px;
+        overflow-y: auto;
+    }
+
+    .log_in,
+    .signup {
+        width: min(96vw, 420px);
+        border-radius: 14px;
+        padding: 18px 14px;
+    }
+
+    .log_in {
+        min-height: auto;
+    }
+
+    .signup {
+        height: auto;
+        min-height: auto;
+    }
+
+    .log_in h1,
+    .signup h1 {
+        margin-top: 12px;
+        font-size: 2rem;
+    }
+
+    .resend-form {
+        flex-direction: column;
+    }
+
+    .resend-btn {
+        width: 100%;
+        padding: 10px 12px;
+    }
 }

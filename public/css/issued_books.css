@@ -1,113 +1,165 @@
+body {
+    min-height: 100vh;
+    background:
+        linear-gradient(135deg, rgba(246, 242, 235, 0.8), rgba(232, 239, 245, 0.72)),
+        url("/images/dashboard.jpg.avif") center center / cover fixed no-repeat;
+}
+
+.issued-container,
+.book-list {
+    animation: pageRiseIn 0.35s ease both;
+}
+
+@keyframes pageRiseIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .issued-container {
-    margin: 20px;
+    width: min(1100px, calc(100% - 30px));
+    margin: 22px auto 34px;
 }
 
 .issued-container h2 {
     text-align: center;
-    margin-bottom: 20px;
-    color: #2d89ef;
+    margin-bottom: 22px;
+    color: #183153;
+    font-size: clamp(1.45rem, 2.6vw, 2rem);
+    letter-spacing: 0.01em;
 }
 
 .return-button {
-    background-color: #0d5b11;
+    background: linear-gradient(140deg, #126735, #168245);
     color: white;
-    padding: 8px 16px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(18, 103, 53, 0.2);
+    transition: transform 0.16s ease, filter 0.16s ease;
 }
 
 .return-button:hover {
-    background-color: #187c19;
+    transform: translateY(-1px);
+    filter: brightness(1.06);
 }
 
 .no-books {
     text-align: center;
-    margin-top: 40px;
-    color: #777;
-    font-size: 16px;
+    margin-top: 16px;
+    color: #607589;
+    font-size: 1rem;
 }
 
 /* ── Fine / Status Badges ──────────────────────────────────────────────────── */
 .fine-badge {
     margin-top: 8px;
-    padding: 6px 12px;
-    background: #fdecea;
-    color: #c0392b;
-    border-left: 4px solid #c0392b;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: bold;
+    padding: 8px 12px;
+    background: #fde9eb;
+    color: #a12d2d;
+    border-left: 4px solid #c84545;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
 .due-today-badge {
     margin-top: 8px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     background: #fff3e0;
-    color: #e67e22;
-    border-left: 4px solid #e67e22;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: bold;
+    color: #9f5d0f;
+    border-left: 4px solid #d18129;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
 .warning-badge {
     margin-top: 8px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     background: #fffde7;
-    color: #f39c12;
-    border-left: 4px solid #f39c12;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: bold;
+    color: #a0720a;
+    border-left: 4px solid #daab35;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
 .safe-badge {
     margin-top: 8px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     background: #eafaf1;
-    color: #27ae60;
-    border-left: 4px solid #27ae60;
-    border-radius: 4px;
-    font-size: 13px;
+    color: #166e43;
+    border-left: 4px solid #2b955f;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
 }
 
 .overdue-card {
-    border-left: 4px solid #c0392b;
+    border-left: 5px solid #c0392b;
 }
 
 /* ── Back link ─────────────────────────────────────────────────────────────── */
 .back-link {
     color: white;
     text-decoration: none;
-    font-size: 13px;
-    padding: 6px 10px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    padding: 7px 10px;
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 8px;
+    transition: background-color 0.16s ease;
 }
-.back-link:hover { border-color: white; }
+
+.back-link:hover {
+    border-color: rgba(255, 255, 255, 0.82);
+    background-color: rgba(255, 255, 255, 0.12);
+}
 
 /* ── Book count ────────────────────────────────────────────────────────────── */
 .book-count {
-    font-size: 14px;
-    color: #888;
+    font-size: 0.93rem;
+    color: #6c8095;
     font-weight: normal;
 }
 
 /* ── Empty state ───────────────────────────────────────────────────────────── */
 .no-books-wrap {
     text-align: center;
-    padding: 50px 20px;
+    padding: 42px 20px;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #ffffff, #f5f9ff);
+    border: 1px solid rgba(16, 36, 58, 0.1);
+    box-shadow: 0 12px 30px rgba(16, 36, 58, 0.1);
 }
+
 .browse-link {
     display: inline-block;
     margin-top: 15px;
     padding: 10px 24px;
-    background: #183153;
+    background: linear-gradient(135deg, #183153, #2a5883);
     color: white;
     text-decoration: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 999px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(24, 49, 83, 0.28);
 }
-.browse-link:hover { background: #0f2248; }
+
+.browse-link:hover {
+    filter: brightness(1.08);
+}
+
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+}

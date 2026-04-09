@@ -20,7 +20,12 @@ const getAppUrl = (req) => {
 };
 
 // GET /signup
-const getSignup = (req, res) => res.render("signup", { message: null, type: null });
+const getSignup = (req, res) => {
+    if (req.session.user_id) {
+        return req.session.isAdmin ? res.redirect("/admin") : res.redirect("/dashboard");
+    }
+    res.render("signup", { message: null, type: null });
+};
 
 // POST /signup
 const postSignup = async (req, res) => {
@@ -84,7 +89,12 @@ const verifyEmail = async (req, res) => {
 };
 
 // GET /login
-const getLogin = (req, res) => res.render("login", { message: null });
+const getLogin = (req, res) => {
+    if (req.session.user_id) {
+        return req.session.isAdmin ? res.redirect("/admin") : res.redirect("/dashboard");
+    }
+    res.render("login", { message: null });
+};
 
 // POST /login  (users only — admins use /admin-login)
 const postLogin = async (req, res) => {
@@ -134,7 +144,12 @@ const getProfile = async (req, res) => {
 };
 
 // GET /forgot-password
-const getForgotPassword = (req, res) => res.render("forgot_password", { message: null, type: null });
+const getForgotPassword = (req, res) => {
+    if (req.session.user_id) {
+        return req.session.isAdmin ? res.redirect("/admin") : res.redirect("/dashboard");
+    }
+    res.render("forgot_password", { message: null, type: null });
+};
 
 // POST /forgot-password
 const postForgotPassword = async (req, res) => {

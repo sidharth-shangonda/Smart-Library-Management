@@ -28,7 +28,7 @@ input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
     .nav-right {
         gap: 6px;
         width: 100%;
-        justify-content: flex-end;
+        justify-content: space-between;
         flex-wrap: wrap;
     }
     .admin-nav-link { font-size: 12px; padding: 4px 8px; }
@@ -82,7 +82,7 @@ input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
 
 /* ── Issued books page ──────────────────────────────────── */
 @media (max-width: 600px) {
-    .issued-container { margin: 12px; }
+    .issued-container { margin: 12px auto 20px; width: calc(100% - 24px); }
     .book-list .book-card { flex-direction: column; }
     .return-button { width: 100%; padding: 12px; margin-top: 10px; }
     .fine-badge, .safe-badge, .warning-badge, .due-today-badge {
@@ -133,7 +133,16 @@ input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
 @media (max-width: 480px) {
     .modal-box { width: 95vw; padding: 20px 16px; }
     .profileModal {
-        width: 92vw !important;
+        width: min(92vw, 420px) !important;
+        max-height: 84vh;
+        overflow-y: auto;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    #closeModal {
+        top: 8px;
+        right: 8px;
     }
 }
 

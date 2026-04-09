@@ -32,7 +32,7 @@
       <button type="submit" class="btn-auth">Login</button>
     </form>
 
-    <div class="register-link" style="margin-top:10px;">
+    <div class="register-link register-link-top">
       <a href="/forgot-password">Forgot Password?</a>
     </div>
     <div class="register-link">
@@ -43,15 +43,13 @@
     </div>
 
     <!-- Resend Verification -->
-    <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.3);padding-top:15px;width:100%;">
-      <p style="color:wheat;font-size:13px;text-align:center;margin-bottom:8px;">
+    <div class="resend-wrap">
+      <p class="resend-title">
         Didn't receive verification email?
       </p>
-      <form action="/resend-verification" method="POST" style="display:flex;gap:8px;">
-        <input type="email" name="email" placeholder="Enter your email"
-               style="flex:1;padding:8px;border-radius:8px;border:1px solid #183153;font-size:13px;outline:none;"/>
-        <button type="submit"
-                style="background:#183153;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;">
+      <form action="/resend-verification" method="POST" class="resend-form">
+        <input type="email" name="email" placeholder="Enter your email" class="resend-input"/>
+        <button type="submit" class="resend-btn">
           Resend
         </button>
       </form>

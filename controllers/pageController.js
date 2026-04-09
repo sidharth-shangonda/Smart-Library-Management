@@ -1,5 +1,8 @@
 // GET /
 const getHome = (req, res) => {
+    if (req.session.user_id) {
+        return req.session.isAdmin ? res.redirect("/admin") : res.redirect("/dashboard");
+    }
     res.render("index");
 };
 

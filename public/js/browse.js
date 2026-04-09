@@ -74,8 +74,16 @@
 
     function fetchBooks(reset) {
         fetch(`/search?q=${encodeURIComponent(currentQuery)}&page=${currentPage}&limit=${LIMIT}`)
-            .then(res => res.json())
+            .then(async (res) => {
+                const data = await res.json();
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                return data;
+            })
             .then(data => {
+                if (!data) return;
                 if (!data.success) return;
                 renderBooks(data.books, reset);
                 showMoreBtn.style.display = data.hasMore ? 'block' : 'none';

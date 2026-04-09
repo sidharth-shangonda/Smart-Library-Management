@@ -23,6 +23,10 @@ const getBrowse = (req, res) => {
 
 // GET /search
 const searchBooks = async (req, res) => {
+    if (!req.session.user_id) {
+        return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
     const q     = req.query.q || "";
     const page  = parseInt(req.query.page)  || 1;
     const limit = parseInt(req.query.limit) || 25;
