@@ -41,7 +41,15 @@ const postSignup = async (req, res) => {
 
         const appUrl = getAppUrl(req);
         const verifyLink = `${appUrl}/verify-email?token=${encodeURIComponent(token)}`;
-        await sendMail({ to: email, ...templates.verifyEmail(username, verifyLink) });
+        try {
+            await sendMail({ to: email, ...templates.verifyEmail(username, verifyLink) });
+        } catch (mailErr) {
+            console.error("Signup mail error:", mailErr.message);
+            return res.render("signup", {
+                message: "Account created, but verification email could not be sent right now. Please go to login and use resend verification.",
+                type: "error",
+            });
+        }
 
         res.render("signup", {
             message: `A verification link has been sent to ${email}. Please check your inbox.`,
