@@ -56,6 +56,14 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public"), {
     maxAge: isProd ? "7d" : 0,          // cache static files 7 days in prod
+    setHeaders: (res, filePath) => {
+        // Avoid stale UI after deploys: always revalidate CSS/JS.
+        if (/\.(css|js)$/i.test(filePath)) {
+            res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Expires", "0");
+        }
+    },
 }));
 
 // ── Routes ────────────────────────────────────────────────────────
