@@ -14,6 +14,7 @@ const adminRoutes       = require("./routes/adminRoutes");
 
 const app = express();
 const isProd = process.env.NODE_ENV === "production";
+const assetVersion = process.env.RENDER_GIT_COMMIT || process.env.ASSET_VERSION || String(Date.now());
 
 // ── Trust Railway/Render/Nginx proxy ─────────────────────────────
 app.set("trust proxy", 1);
@@ -51,6 +52,11 @@ app.use(session({
         sameSite: "lax",
     },
 }));
+
+app.use((req, res, next) => {
+    res.locals.assetVersion = assetVersion;
+    next();
+});
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
