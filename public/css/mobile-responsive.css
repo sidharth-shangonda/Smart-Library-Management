@@ -25,8 +25,15 @@ input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
         padding-bottom: 8px;
     }
     .nav-title span { font-size: 1rem; }
-    .nav-right { gap: 6px; }
+    .nav-right {
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
     .admin-nav-link { font-size: 12px; padding: 4px 8px; }
+    .back-nav-link, .back-link { font-size: 12px; padding: 5px 8px; }
+    #profileBtn { font-size: 26px; padding: 8px 10px; }
 }
 
 /* ── Auth pages ─────────────────────────────────────────── */
@@ -126,9 +133,7 @@ input, button, select { font-size: 16px; } /* prevents iOS zoom on focus */
 @media (max-width: 480px) {
     .modal-box { width: 95vw; padding: 20px 16px; }
     .profileModal {
-        width: 90vw !important;
-        left: 5vw !important;
-        right: 5vw !important;
+        width: 92vw !important;
     }
 }
 

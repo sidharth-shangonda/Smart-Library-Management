@@ -5,7 +5,7 @@
     const closeModal    = document.getElementById('closeModal');
     const modalBackdrop = document.getElementById('modalBackdrop');
 
-    if (!profileBtn) return;
+    if (!profileBtn || !profileModal || !closeModal || !modalBackdrop) return;
 
     profileModal.style.display  = 'none';
     modalBackdrop.style.display = 'none';
@@ -24,7 +24,13 @@
 
     profileBtn.addEventListener('click', () => {
         fetch('/profile')
-            .then(res => res.json())
+            .then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data?.error || 'Failed to load profile info.');
+                }
+                return data;
+            })
             .then(data => {
                 document.getElementById('modalUsername').textContent = data.username;
                 document.getElementById('modalUserId').textContent   = data.user_id;
@@ -33,7 +39,7 @@
             })
             .catch(err => {
                 console.error('Profile fetch error:', err);
-                alert('Failed to load profile info.');
+                alert(err.message || 'Failed to load profile info.');
             });
     });
 

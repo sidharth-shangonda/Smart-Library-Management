@@ -2,6 +2,23 @@ const User      = require("../models/User");
 const sendMail  = require("../config/mailer");
 const templates = require("../config/emailTemplates");
 
+const getAppUrl = (req) => {
+    const configuredAppUrl = process.env.APP_URL?.trim();
+    if (configuredAppUrl) {
+        const normalized = /^https?:\/\//i.test(configuredAppUrl)
+            ? configuredAppUrl
+            : `https://${configuredAppUrl}`;
+        return normalized.replace(/\/+$/, "");
+    }
+
+    const forwardedProto = req.get("x-forwarded-proto")?.split(",")[0]?.trim();
+    const protocol = forwardedProto || req.protocol;
+    const host = req.get("x-forwarded-host") || req.get("host");
+
+    if (host) return `${protocol}://${host}`;
+    return "http://localhost:8080";
+};
+
 // GET /signup
 const getSignup = (req, res) => res.render("signup", { message: null, type: null });
 
@@ -22,7 +39,8 @@ const postSignup = async (req, res) => {
         const token   = newUser.generateVerifyToken();
         await newUser.save();
 
-        const verifyLink = `${process.env.APP_URL}/verify-email?token=${token}`;
+        const appUrl = getAppUrl(req);
+        const verifyLink = `${appUrl}/verify-email?token=${encodeURIComponent(token)}`;
         await sendMail({ to: email, ...templates.verifyEmail(username, verifyLink) });
 
         res.render("signup", {
@@ -48,7 +66,8 @@ const verifyEmail = async (req, res) => {
         user.verifyExpires = null;
         await user.save();
 
-        await sendMail({ to: user.email, ...templates.verifySuccess(user.username, process.env.APP_URL) });
+        const appUrl = getAppUrl(req);
+        await sendMail({ to: user.email, ...templates.verifySuccess(user.username, appUrl) });
         res.render("verify_status", { success: true, message: "Email verified! You can now log in." });
     } catch (err) {
         console.error("Verify error:", err);
@@ -123,7 +142,8 @@ const postForgotPassword = async (req, res) => {
         const token = user.generateResetToken();
         await user.save();
 
-        const resetLink = `${process.env.APP_URL}/reset-password?token=${token}`;
+        const appUrl = getAppUrl(req);
+        const resetLink = `${appUrl}/reset-password?token=${encodeURIComponent(token)}`;
         await sendMail({ to: user.email, ...templates.forgotPassword(user.username, resetLink) });
 
         res.render("forgot_password", {
@@ -183,7 +203,8 @@ const resendVerification = async (req, res) => {
         const token = user.generateVerifyToken();
         await user.save();
 
-        const verifyLink = `${process.env.APP_URL}/verify-email?token=${token}`;
+        const appUrl = getAppUrl(req);
+        const verifyLink = `${appUrl}/verify-email?token=${encodeURIComponent(token)}`;
         await sendMail({ to: user.email, ...templates.verifyEmail(user.username, verifyLink) });
 
         res.render("login", { message: `Verification email resent to ${email}. Check your inbox.` });

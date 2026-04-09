@@ -35,12 +35,14 @@ const sendMail = async ({ to, subject, html }) => {
         console.log(`✅ Mail ACCEPTED by Gmail`);
         console.log(`   Message ID: ${info.messageId}`);
         console.log(`   Response:   ${info.response}`);
+        return info;
     } catch (err) {
         console.error(`❌ Mail FAILED`);
         console.error(`   To:      ${to}`);
         console.error(`   Error:   ${err.message}`);
         console.error(`   Code:    ${err.code}`);
         console.error(`   Full:    ${JSON.stringify(err, null, 2)}`);
+        throw err;
     }
 };
 
