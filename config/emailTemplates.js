@@ -96,6 +96,22 @@ const bookReturned = (username, bookName, returnDate, fine) => ({
         </div></div>`
 });
 
+const returnDeclined = (username, bookName) => ({
+    subject: `❌ Return request declined for "${bookName}"`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;">
+        <div style="background:#c0392b;padding:20px;text-align:center;"><h1 style="color:white;margin:0;">MyLibrary</h1></div>
+        <div style="padding:30px;">
+            <h2 style="color:#c0392b;">Return Not Confirmed ❌</h2>
+            <p>Hello <strong>${username}</strong>, your return request for the following book was declined by admin:</p>
+            <div style="background:#fdecea;padding:15px;border-radius:8px;margin:15px 0;border-left:4px solid #c0392b;">
+                <p><strong>📚 Book:</strong> ${bookName}</p>
+                <p><strong>Status:</strong> Not returned (admin did not confirm physical handover)</p>
+            </div>
+            <p>Please hand over the book at the library counter and submit a new return request from your account.</p>
+            <p style="color:#888;font-size:13px;margin-top:30px;">— MyLibrary Team</p>
+        </div></div>`
+});
+
 const verifyEmail = (username, verifyLink) => ({
     subject: `✅ Verify your MyLibrary account`,
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;">
@@ -156,6 +172,7 @@ const passwordChanged = (username) => ({
 module.exports = {
     bookIssued, reminder20Days, reminderLastDay,
     deadlineReached, overdueDaily, bookReturned,
+    returnDeclined,
     verifyEmail, verifySuccess,
     forgotPassword, passwordChanged,
 };

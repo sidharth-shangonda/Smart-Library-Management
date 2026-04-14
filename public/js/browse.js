@@ -20,14 +20,16 @@
 
     function borrowBtn(book) {
         if (book.availableStock === 0) {
-            return `<button class="btn" disabled style="background:#aaa;cursor:not-allowed;">Out of Stock</button>`;
+            return `<div class="book-actions"><button type="button" class="btn-borrow btn-borrow-disabled" disabled>Out of Stock</button></div>`;
         }
         return `
-            <form action="/borrow" method="POST" style="margin-left:20px;">
-                <input type="hidden" name="book_id"   value="${book.book_id}"/>
-                <input type="hidden" name="book_name" value="${escapeHtml(book.title)}"/>
-                <button type="submit" class="btn">Borrow</button>
-            </form>`;
+            <div class="book-actions">
+                <form action="/borrow" method="POST">
+                    <input type="hidden" name="book_id"   value="${book.book_id}"/>
+                    <input type="hidden" name="book_name" value="${escapeHtml(book.title)}"/>
+                    <button type="submit" class="btn-borrow">Borrow</button>
+                </form>
+            </div>`;
     }
 
     function escapeHtml(str) {

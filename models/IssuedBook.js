@@ -12,6 +12,13 @@ const issuedBookSchema = new mongoose.Schema(
         finePaid:   { type: Boolean, default: false },
         returned:   { type: Boolean, default: false },
         returnedAt: { type: Date, default: null },
+        returnRequestStatus: {
+            type: String,
+            enum: ["none", "pending", "declined"],
+            default: "none",
+        },
+        returnRequestedAt: { type: Date, default: null },
+        returnDecisionAt:  { type: Date, default: null },
         reminders: {
             issued:   { type: Boolean, default: false },
             day20:    { type: Boolean, default: false },

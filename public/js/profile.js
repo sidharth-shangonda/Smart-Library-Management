@@ -1,53 +1,54 @@
-// Shared profile modal logic — included on browse, dashboard, issued_books
+/**
+ * profile.js — handles the profile modal open/close + data fetch
+ * Works with the redesigned modal markup in global.css
+ */
 (function () {
-    const profileBtn    = document.getElementById('profileBtn');
-    const profileModal  = document.getElementById('profileModal');
-    const closeModal    = document.getElementById('closeModal');
-    const modalBackdrop = document.getElementById('modalBackdrop');
+  const profileBtn  = document.getElementById('profileBtn');
+  const modal       = document.getElementById('profileModal');
+  const backdrop    = document.getElementById('modalBackdrop');
+  const closeBtn    = document.getElementById('closeModal');
 
-    if (!profileBtn || !profileModal || !closeModal || !modalBackdrop) return;
+  if (!profileBtn || !modal || !backdrop) return;
 
-    profileModal.style.display  = 'none';
-    modalBackdrop.style.display = 'none';
+  let dataLoaded = false;
 
-    const openProfileModal = () => {
-        profileModal.style.display  = 'flex';
-        modalBackdrop.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    };
+  function openModal() {
+    modal.classList.add('active');
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (!dataLoaded) fetchProfile();
+  }
 
-    const closeProfileModal = () => {
-        profileModal.style.display  = 'none';
-        modalBackdrop.style.display = 'none';
-        document.body.style.overflow = '';
-    };
+  function closeModal() {
+    modal.classList.remove('active');
+    backdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 
-    profileBtn.addEventListener('click', () => {
-        fetch('/profile')
-            .then(async (res) => {
-                const data = await res.json();
-                if (!res.ok) {
-                    throw new Error(data?.error || 'Failed to load profile info.');
-                }
-                return data;
-            })
-            .then(data => {
-                document.getElementById('modalUsername').textContent = data.username;
-                document.getElementById('modalUserId').textContent   = data.user_id;
-                document.getElementById('modalEmail').textContent    = data.email;
-                openProfileModal();
-            })
-            .catch(err => {
-                console.error('Profile fetch error:', err);
-                alert(err.message || 'Failed to load profile info.');
-            });
-    });
+  async function fetchProfile() {
+    try {
+      const res  = await fetch('/api/profile');
+      const data = await res.json();
 
-    closeModal.addEventListener('click', closeProfileModal);
-    modalBackdrop.addEventListener('click', closeProfileModal);
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && profileModal.style.display === 'flex') {
-            closeProfileModal();
-        }
-    });
+      const usernameEl = document.getElementById('modalUsername');
+      const userIdEl   = document.getElementById('modalUserId');
+      const emailEl    = document.getElementById('modalEmail');
+
+      if (usernameEl) usernameEl.textContent = data.username || '—';
+      if (userIdEl)   userIdEl.textContent   = data.userId   || '—';
+      if (emailEl)    emailEl.textContent    = data.email    || '—';
+
+      dataLoaded = true;
+    } catch (err) {
+      console.error('Failed to load profile:', err);
+    }
+  }
+
+  profileBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
 })();

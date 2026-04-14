@@ -1,165 +1,144 @@
+/* ── issued_books.css ────────────────────────────────────────────── */
 body {
-    min-height: 100vh;
-    background:
-        linear-gradient(135deg, rgba(246, 242, 235, 0.8), rgba(232, 239, 245, 0.72)),
-        url("/images/dashboard.jpg.avif") center center / cover fixed no-repeat;
-}
-
-.issued-container,
-.book-list {
-    animation: pageRiseIn 0.35s ease both;
-}
-
-@keyframes pageRiseIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  background:
+    radial-gradient(circle at top left, rgba(200,151,58,0.08), transparent 26%),
+    linear-gradient(180deg, #fcfaf6 0%, #f5efe3 100%);
+  min-height: 100vh;
 }
 
 .issued-container {
-    width: min(1100px, calc(100% - 30px));
-    margin: 22px auto 34px;
+  max-width: 960px;
+  margin: 36px auto 64px;
+  padding: 0 28px;
+  position: relative;
 }
 
-.issued-container h2 {
-    text-align: center;
-    margin-bottom: 22px;
-    color: #183153;
-    font-size: clamp(1.45rem, 2.6vw, 2rem);
-    letter-spacing: 0.01em;
+.issued-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.return-button {
-    background: linear-gradient(140deg, #126735, #168245);
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 700;
-    box-shadow: 0 10px 20px rgba(18, 103, 53, 0.2);
-    transition: transform 0.16s ease, filter 0.16s ease;
+.issued-header h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 2.15rem; font-weight: 700;
+  color: var(--text-main);
+  display: flex; align-items: center; gap: 12px;
 }
 
-.return-button:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.06);
+.book-count-badge {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  background: var(--deep);
+  color: var(--cream);
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 16px rgba(13,27,42,0.12);
 }
 
-.no-books {
-    text-align: center;
-    margin-top: 16px;
-    color: #607589;
-    font-size: 1rem;
+.issued-book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* ── Fine / Status Badges ──────────────────────────────────────────────────── */
-.fine-badge {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: #fde9eb;
-    color: #a12d2d;
-    border-left: 4px solid #c84545;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 700;
+.issued-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.issued-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(200,151,58,0.22); }
+
+.issued-card.overdue-card {
+  border-color: rgba(153,27,27,0.25);
+  background: linear-gradient(to right, rgba(254,226,226,0.35), var(--white));
+}
+.issued-card.overdue-card::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--danger);
 }
 
-.due-today-badge {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: #fff3e0;
-    color: #9f5d0f;
-    border-left: 4px solid #d18129;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 700;
+.issued-card img {
+  width: 80px; height: 108px;
+  object-fit: cover; border-radius: 8px;
+  flex-shrink: 0; box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.issued-card:hover img { transform: scale(1.02); box-shadow: 0 10px 22px rgba(13,27,42,0.16); }
+
+.issued-details { flex: 1; min-width: 0; }
+
+.issued-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--text-main); margin-bottom: 8px; line-height: 1.25;
 }
 
-.warning-badge {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: #fffde7;
-    color: #a0720a;
-    border-left: 4px solid #daab35;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 700;
+.issued-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+.issued-meta-item { font-size: 0.80rem; color: var(--text-sub); }
+.issued-meta-item strong { color: var(--text-main); font-weight: 600; }
+
+.issued-actions {
+  display: flex; flex-direction: column;
+  justify-content: center; gap: 10px; flex-shrink: 0;
 }
 
-.safe-badge {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: #eafaf1;
-    color: #166e43;
-    border-left: 4px solid #2b955f;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 600;
+/* ── Empty State ─────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  background: var(--white);
+  border: 1px dashed var(--parchment-2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+.empty-state-icon {
+  width: 72px; height: 72px;
+  background: var(--parchment);
+  border-radius: 50%; display: grid; place-items: center;
+  margin: 0 auto 20px;
+  font-size: 28px; color: var(--text-muted);
+}
+.empty-state h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--text-sub); margin-bottom: 8px;
+}
+.empty-state p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 24px; }
+
+/* ── Responsive issued ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .issued-container { padding: 0 16px; }
+  .issued-card { flex-direction: column; }
+  .issued-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; }
+  .issued-meta { grid-template-columns: 1fr; }
+  .issued-actions { flex-direction: row; }
 }
 
-.overdue-card {
-    border-left: 5px solid #c0392b;
-}
-
-/* ── Back link ─────────────────────────────────────────────────────────────── */
-.back-link {
-    color: white;
-    text-decoration: none;
-    font-size: 0.83rem;
-    font-weight: 600;
-    padding: 7px 10px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    transition: background-color 0.16s ease;
-}
-
-.back-link:hover {
-    border-color: rgba(255, 255, 255, 0.82);
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-/* ── Book count ────────────────────────────────────────────────────────────── */
-.book-count {
-    font-size: 0.93rem;
-    color: #6c8095;
-    font-weight: normal;
-}
-
-/* ── Empty state ───────────────────────────────────────────────────────────── */
-.no-books-wrap {
-    text-align: center;
-    padding: 42px 20px;
-    border-radius: 16px;
-    background: linear-gradient(150deg, #ffffff, #f5f9ff);
-    border: 1px solid rgba(16, 36, 58, 0.1);
-    box-shadow: 0 12px 30px rgba(16, 36, 58, 0.1);
-}
-
-.browse-link {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 24px;
-    background: linear-gradient(135deg, #183153, #2a5883);
-    color: white;
-    text-decoration: none;
-    border-radius: 999px;
-    font-size: 0.94rem;
-    font-weight: 700;
-    box-shadow: 0 10px 22px rgba(24, 49, 83, 0.28);
-}
-
-.browse-link:hover {
-    filter: brightness(1.08);
-}
-
-@media (max-width: 768px) {
-    body {
-        background-attachment: scroll;
-    }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

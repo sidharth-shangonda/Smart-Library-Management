@@ -9,10 +9,17 @@ const formatDate = (dateVal) => {
     return `${String(d.getDate()).padStart(2,"0")}-${String(d.getMonth()+1).padStart(2,"0")}-${d.getFullYear()}`;
 };
 
-const daysFromToday = (dueDate) => {
-    const now = new Date(); now.setHours(0,0,0,0);
+const daysFromDate = (dueDate, referenceDate = new Date()) => {
+    const now = new Date(referenceDate); now.setHours(0,0,0,0);
     const due = new Date(dueDate); due.setHours(0,0,0,0);
     return Math.floor((due - now) / (1000*60*60*24));
+};
+
+const getFineSnapshot = (record, referenceDate = new Date()) => {
+    const daysLeft = daysFromDate(record.due_date, referenceDate);
+    const overdue  = daysLeft < 0;
+    const fine     = overdue ? Math.abs(daysLeft) * 10 : 0;
+    return { daysLeft, overdue, fine };
 };
 
 // GET /browse
@@ -54,20 +61,45 @@ const getIssuedBooks = async (req, res) => {
     try {
         const issued = await IssuedBook.find({ user: req.session.user_id, returned: false }).lean();
         if (issued.length === 0) {
-            return res.render("issued_books", { issuedBooks: [], username: req.session.username, user_id: req.session.user_id });
+            return res.render("issued_books", {
+                issuedBooks: [],
+                username: req.session.username,
+                user_id: req.session.user_id,
+                message: req.query.message || null,
+                type: req.query.type || "success",
+            });
         }
         const bookIds = issued.map(i => i.book_id);
         const books   = await Book.find({ book_id: { $in: bookIds } }).lean();
 
         const issuedBooks = books.map(book => {
             const record   = issued.find(i => i.book_id === book.book_id);
-            const daysLeft = daysFromToday(record.due_date);
-            const overdue  = daysLeft < 0;
-            const fine     = overdue ? Math.abs(daysLeft) * 10 : 0;
-            return { ...book, issue_date: formatDate(record.issue_date), due_date: formatDate(record.due_date), daysLeft, overdue, fine, finePaid: record.finePaid };
+            const snapshotDate =
+                record.returnRequestStatus === "pending" && record.returnRequestedAt
+                    ? record.returnRequestedAt
+                    : new Date();
+            const { daysLeft, overdue, fine } = getFineSnapshot(record, snapshotDate);
+
+            return {
+                ...book,
+                issue_date: formatDate(record.issue_date),
+                due_date: formatDate(record.due_date),
+                daysLeft,
+                overdue,
+                fine,
+                finePaid: record.finePaid,
+                returnRequestStatus: record.returnRequestStatus,
+                returnRequestedAt: record.returnRequestedAt ? formatDate(record.returnRequestedAt) : null,
+            };
         });
 
-        res.render("issued_books", { issuedBooks, username: req.session.username, user_id: req.session.user_id });
+        res.render("issued_books", {
+            issuedBooks,
+            username: req.session.username,
+            user_id: req.session.user_id,
+            message: req.query.message || null,
+            type: req.query.type || "success",
+        });
     } catch (err) {
         console.error("Issued books error:", err);
         res.status(500).send("Internal Server Error");
@@ -128,25 +160,20 @@ const returnBook = async (req, res) => {
     const { book_id } = req.body;
     try {
         const record = await IssuedBook.findOne({ user: req.session.user_id, book_id: Number(book_id), returned: false });
-        if (!record) return res.redirect("/issued_books");
-
-        const daysLeft   = daysFromToday(record.due_date);
-        const fine       = daysLeft < 0 ? Math.abs(daysLeft) * 10 : 0;
-        const returnDate = formatDate(new Date());
-
-        // Send return email
-        const user = await User.findById(req.session.user_id).select("email");
-        if (user?.email) {
-            await sendMail({ to: user.email, ...templates.bookReturned(req.session.username, record.book_name, returnDate, fine) });
+        if (!record) {
+            return res.redirect("/issued_books?type=error&message=No active issue record found for this book");
         }
 
-        // Restore stock
-        await Book.findOneAndUpdate({ book_id: Number(book_id) }, { $inc: { availableStock: 1 } });
+        if (record.returnRequestStatus === "pending") {
+            return res.redirect("/issued_books?type=error&message=Return request already pending admin confirmation");
+        }
 
-        // Delete issued record
-        await IssuedBook.findByIdAndDelete(record._id);
+        record.returnRequestStatus = "pending";
+        record.returnRequestedAt = new Date();
+        record.returnDecisionAt = null;
+        await record.save();
 
-        res.redirect("/issued_books");
+        res.redirect("/issued_books?type=success&message=Return request submitted. Waiting for admin confirmation");
     } catch (err) {
         console.error("Return error:", err);
         res.status(500).send("Failed to return book.");

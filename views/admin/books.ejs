@@ -15,7 +15,8 @@
     <h1 class="admin-heading">Manage Books</h1>
 
     <% if (message) { %>
-      <div class="alert-banner <%= message.includes('success') ? 'alert-success' : 'alert-error' %>"><%= message %></div>
+      <% const isErrorMessage = /(fail|cannot|not found|error)/i.test(message); %>
+      <div class="alert-banner <%= isErrorMessage ? 'alert-error' : 'alert-success' %>"><%= message %></div>
     <% } %>
 
     <!-- Add Book Form -->

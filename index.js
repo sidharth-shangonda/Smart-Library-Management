@@ -93,10 +93,31 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 8080;
+const BASE_PORT = Number(process.env.PORT) || 8080;
+const MAX_PORT_ATTEMPTS = 10;
+
+const startServer = (port, attemptsLeft) => {
+    const server = app.listen(port, () => {
+        const runningUrl = isProd
+            ? (process.env.APP_URL || `http://localhost:${port}`)
+            : `http://localhost:${port}`;
+        console.log(`🚀 Server running → ${runningUrl}`);
+    });
+
+    server.on("error", (err) => {
+        if (err.code === "EADDRINUSE" && attemptsLeft > 0) {
+            const nextPort = port + 1;
+            console.warn(`⚠️  Port ${port} is busy. Retrying on ${nextPort}...`);
+            startServer(nextPort, attemptsLeft - 1);
+            return;
+        }
+
+        console.error("❌ Failed to start server:", err);
+        process.exit(1);
+    });
+};
+
 connectDB().then(() => {
     startCronJobs();
-    app.listen(PORT, () =>
-        console.log(`🚀 Server running → ${isProd ? process.env.APP_URL : `http://localhost:${PORT}`}`)
-    );
+    startServer(BASE_PORT, MAX_PORT_ATTEMPTS);
 });

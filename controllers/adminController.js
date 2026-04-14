@@ -1,6 +1,8 @@
 const User       = require("../models/User");
 const Book       = require("../models/Book");
 const IssuedBook = require("../models/IssuedBook");
+const sendMail   = require("../config/mailer");
+const templates  = require("../config/emailTemplates");
 
 const formatDate = (dateVal) => {
     if (!dateVal) return "N/A";
@@ -14,14 +16,32 @@ const normalizeCoverImage = (value) => {
     return trimmed.length > 0 ? trimmed : null;
 };
 
+const daysFromDate = (dueDate, referenceDate = new Date()) => {
+    const now = new Date(referenceDate); now.setHours(0, 0, 0, 0);
+    const due = new Date(dueDate); due.setHours(0, 0, 0, 0);
+    return Math.floor((due - now) / (1000 * 60 * 60 * 24));
+};
+
+const getFineSnapshot = (record, referenceDate = new Date()) => {
+    const daysLeft = daysFromDate(record.due_date, referenceDate);
+    const overdue  = daysLeft < 0;
+    const fine     = overdue ? Math.abs(daysLeft) * 10 : 0;
+    return { daysLeft, overdue, fine };
+};
+
 // GET /admin
 const getAdminDashboard = async (req, res) => {
     try {
         const totalUsers   = await User.countDocuments({ isAdmin: false });
         const totalBooks   = await Book.countDocuments();
         const totalIssued  = await IssuedBook.countDocuments({ returned: false });
-        const overdueBooks = await IssuedBook.countDocuments({ returned: false, due_date: { $lt: new Date() } });
-        res.render("admin/dashboard", { totalUsers, totalBooks, totalIssued, overdueBooks });
+        const overdueBooks = await IssuedBook.countDocuments({
+            returned: false,
+            returnRequestStatus: { $ne: "pending" },
+            due_date: { $lt: new Date() },
+        });
+        const pendingReturns = await IssuedBook.countDocuments({ returned: false, returnRequestStatus: "pending" });
+        res.render("admin/dashboard", { totalUsers, totalBooks, totalIssued, overdueBooks, pendingReturns });
     } catch (err) {
         console.error("Admin dashboard error:", err);
         res.status(500).send("Server Error");
@@ -132,14 +152,22 @@ const getAdminUsers = async (req, res) => {
 const getAdminIssued = async (req, res) => {
     try {
         const records = await IssuedBook.find({ returned: false }).lean();
-        const now     = new Date(); now.setHours(0,0,0,0);
-
         const issuedBooks = records.map(r => {
-            const due      = new Date(r.due_date); due.setHours(0,0,0,0);
-            const daysLeft = Math.floor((due - now) / (1000*60*60*24));
-            const overdue  = daysLeft < 0;
-            const fine     = overdue ? Math.abs(daysLeft) * 10 : 0;
-            return { ...r, issue_date: formatDate(r.issue_date), due_date: formatDate(r.due_date), daysLeft, overdue, fine };
+            const snapshotDate =
+                r.returnRequestStatus === "pending" && r.returnRequestedAt
+                    ? r.returnRequestedAt
+                    : new Date();
+            const { daysLeft, overdue, fine } = getFineSnapshot(r, snapshotDate);
+
+            return {
+                ...r,
+                issue_date: formatDate(r.issue_date),
+                due_date: formatDate(r.due_date),
+                daysLeft,
+                overdue,
+                fine,
+                returnRequestedAtFormatted: r.returnRequestedAt ? formatDate(r.returnRequestedAt) : null,
+            };
         });
 
         res.render("admin/issued", { issuedBooks, message: req.query.message || null });
@@ -158,4 +186,113 @@ const markFinePaid = async (req, res) => {
     }
 };
 
-module.exports = { getAdminDashboard, getAdminBooks, addBook, editBook, deleteBook, getAdminUsers, getAdminIssued, markFinePaid };
+// GET /admin/returns
+const getAdminReturns = async (req, res) => {
+    try {
+        const records = await IssuedBook.find({ returned: false, returnRequestStatus: { $in: ["pending", "declined"] } })
+            .sort({ returnRequestedAt: -1, updatedAt: -1 })
+            .lean();
+
+        const returnRequests = records.map((r) => {
+            const snapshotDate =
+                r.returnRequestStatus === "pending" && r.returnRequestedAt
+                    ? r.returnRequestedAt
+                    : new Date();
+            const { fine } = getFineSnapshot(r, snapshotDate);
+
+            return {
+                ...r,
+                issueDateFormatted: formatDate(r.issue_date),
+                dueDateFormatted: formatDate(r.due_date),
+                requestDateFormatted: r.returnRequestedAt ? formatDate(r.returnRequestedAt) : "N/A",
+                fine,
+            };
+        });
+
+        res.render("admin/returns", { returnRequests, message: req.query.message || null });
+    } catch (err) {
+        console.error("Admin returns page error:", err);
+        res.status(500).send("Server Error");
+    }
+};
+
+// POST /admin/returns/approve/:id
+const approveReturnRequest = async (req, res) => {
+    try {
+        const record = await IssuedBook.findOne({
+            _id: req.params.id,
+            returned: false,
+            returnRequestStatus: "pending",
+        });
+
+        if (!record) {
+            return res.redirect("/admin/returns?message=Return request not found or already processed");
+        }
+
+        const effectiveReturnDate = record.returnRequestedAt || new Date();
+        const { fine } = getFineSnapshot(record, effectiveReturnDate);
+        const returnDateFormatted = formatDate(effectiveReturnDate);
+
+        await Book.findOneAndUpdate({ book_id: record.book_id }, { $inc: { availableStock: 1 } });
+
+        const user = await User.findById(record.user).select("email username");
+        if (user?.email) {
+            await sendMail({
+                to: user.email,
+                ...templates.bookReturned(user.username || record.username, record.book_name, returnDateFormatted, fine),
+            });
+        }
+
+        await IssuedBook.findByIdAndDelete(record._id);
+        res.redirect("/admin/returns?message=Return request approved and book returned successfully");
+    } catch (err) {
+        console.error("Approve return request error:", err);
+        res.redirect("/admin/returns?message=Failed to approve return request");
+    }
+};
+
+// POST /admin/returns/decline/:id
+const declineReturnRequest = async (req, res) => {
+    try {
+        const record = await IssuedBook.findOne({
+            _id: req.params.id,
+            returned: false,
+            returnRequestStatus: "pending",
+        });
+
+        if (!record) {
+            return res.redirect("/admin/returns?message=Return request not found or already processed");
+        }
+
+        record.returnRequestStatus = "declined";
+        record.returnDecisionAt = new Date();
+        await record.save();
+
+        const user = await User.findById(record.user).select("email username");
+        if (user?.email) {
+            await sendMail({
+                to: user.email,
+                ...templates.returnDeclined(user.username || record.username, record.book_name),
+            });
+        }
+
+        res.redirect("/admin/returns?message=Return request declined and user notified");
+    } catch (err) {
+        console.error("Decline return request error:", err);
+        res.redirect("/admin/returns?message=Failed to decline return request");
+    }
+};
+
+module.exports = {
+    getAdminDashboard,
+    getAdminBooks,
+    addBook,
+    editBook,
+    deleteBook,
+    getAdminUsers,
+    getAdminIssued,
+    markFinePaid,
+    getAdminReturns,
+    approveReturnRequest,
+    declineReturnRequest,
+};

@@ -14,7 +14,7 @@ const runDailyChecks = async () => {
     const now = new Date(); now.setHours(0, 0, 0, 0);
 
     try {
-        const allIssued = await IssuedBook.find({ returned: false });
+        const allIssued = await IssuedBook.find({ returned: false, returnRequestStatus: { $ne: "pending" } });
         let processed = 0;
 
         for (const record of allIssued) {
