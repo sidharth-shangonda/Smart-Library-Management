@@ -22,6 +22,7 @@ router.get("/forgot-password",      getForgotPassword);
 router.post("/forgot-password",     postForgotPassword);
 router.get("/reset-password",       getResetPassword);
 router.post("/reset-password",      postResetPassword);
+router.post("/reset-password/:token", postResetPassword);
 router.post("/resend-verification", resendVerification);
 
 // ── Admin auth ────────────────────────────────────────────────────────────────

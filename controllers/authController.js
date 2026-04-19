@@ -187,6 +187,9 @@ const postForgotPassword = async (req, res) => {
 // GET /reset-password?token=xxx
 const getResetPassword = async (req, res) => {
     const { token } = req.query;
+    if (!token) {
+        return res.render("verify_status", { success: false, message: "Reset link is invalid or incomplete." });
+    }
     try {
         const user = await User.findOne({ resetToken: token, resetExpires: { $gt: new Date() } });
         if (!user) return res.render("verify_status", { success: false, message: "Reset link is invalid or expired." });
@@ -198,7 +201,10 @@ const getResetPassword = async (req, res) => {
 
 // POST /reset-password
 const postResetPassword = async (req, res) => {
-    const { token, password, confirmPassword } = req.body;
+    const token = req.body.token || req.params.token || req.query.token;
+    const { password, confirmPassword } = req.body;
+    if (!token)
+        return res.render("verify_status", { success: false, message: "Reset link is invalid or incomplete." });
     if (!password || !confirmPassword)
         return res.render("reset_password", { token, message: "All fields are required.", type: "error" });
     if (password !== confirmPassword)
